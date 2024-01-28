@@ -4,7 +4,6 @@ import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
 import type { Code } from './components/code';
-import domtoimage from 'dom-to-image';
 import { toSvg } from './imagify';
 
 export interface Language {
@@ -114,7 +113,7 @@ export class Nitro {
       style: {
         transform: `scale(${sizing})`,
         'transform-origin': '0 0',
-        background: transparent ? 'none': backgroundColor,
+        background: transparent ? 'none' : backgroundColor,
       },
       width: node.offsetWidth * sizing,
       height: node.offsetHeight * sizing,
@@ -122,8 +121,6 @@ export class Nitro {
     const svg = toSvg(node, conf);
     const img = new Image();
     img.src = svg;
-    this.form.patchValue({
-      preview: img
-    });
+    this.form.patchValue({preview: img});
   }
 }

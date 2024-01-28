@@ -1,10 +1,11 @@
-import { inject, Injectable, Input } from '@angular/core';
+import { inject, Injectable, Input, NgZone } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
 import type { Code } from './components/code';
 import domtoimage from 'dom-to-image';
+import { toSvg } from './imagify';
 
 export interface Language {
   name: string;
@@ -65,11 +66,14 @@ export class Nitrogen implements CodeStyle, WindowStyle {
   // rendering
   sizing = 2;
   render = 'png';
+
+  preview: HTMLImageElement | null = null;
 }
 
 @Injectable({providedIn: 'root'})
 export class Nitro {
   readonly form = inject(FormBuilder).group<Nitrogen>(new Nitrogen());
+  readonly zone = inject(NgZone);
   code?: Code;
 
   @Input() languagePath = '/assets/languages.json'
@@ -115,17 +119,11 @@ export class Nitro {
       width: node.offsetWidth * sizing,
       height: node.offsetHeight * sizing,
     }
-    domtoimage.toPng(node, conf)
-      .then(item => {
-        const link = document.createElement('a');
-        link.download = 'file.png';
-        link.href = item;
-        link.click();
-        // const i = new Image();
-        // i.src = item;
-        // document.body.appendChild(i);
-        // console.log(item);
-        // // window.open(item)
-      });
+    const svg = toSvg(node, conf);
+    const img = new Image();
+    img.src = svg;
+    this.form.patchValue({
+      preview: img
+    });
   }
 }

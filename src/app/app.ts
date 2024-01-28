@@ -23,6 +23,9 @@ import { Nitro } from './nitrogen';
           </nit-workspace>
         </section>
         <pre>{{nitro.value | json}}</pre>
+        <ng-container *ngIf="nitro.value.preview">
+          <img [src]="nitro.value.preview.src" alt="preview" />
+        </ng-container>
       </main>
     </div>
   `,
@@ -47,4 +50,8 @@ div.wrapper main {
 })
 export class App {
   readonly nitro = inject(Nitro);
+
+  toSvg() {
+
+  }
 }

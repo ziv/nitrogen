@@ -7,11 +7,11 @@
 
   --color-black: #000;
   --color-cyan: var(--palette-cyan);
-  --color-dark-cyan: var(--palette-cyan); /* #{darken(--palette-cyan, 45%)}; */
+  --color-dark-cyan: var(--palette-cyan);
   --color-green: var(--palette-green);
-  --color-dark-green: var(--palette-green); /*#{darken(--palette-green, 10%)};*/
+  --color-dark-green: var(--palette-green);
   --color-grey: var(--palette-grey);
-  --color-light-grey: var(--palette-grey); /*#{lighten(--palette-grey, 5%)};*/
+  --color-light-grey: var(--palette-grey);
   --color-red: #512222;
   --color-off-white: #767676;
   --color-white: #ffffff;
@@ -141,47 +141,88 @@ input[type="range"]::-webkit-slider-thumb {
 /*  margin: 0;*/
 /*}*/
 
+//
+//fieldset {
+//  border: 1px solid white;
+//  border-radius: .2em;
+//}
+//
+//fieldset legend {
+//  font-size: 1em;
+//  font-family: monospace;
+//}
+//
+//fieldset h3 {
+//  font-size: 1em;
+//  font-weight: normal;
+//  font-family: monospace;
+//  padding: .4em 0;
+//  margin: 0;
+//}
+//
+//fieldset label {
+//  display: flex;
+//  align-items: center;
+//  font-size: 1em;
+//  font-family: monospace;
+//}
+//
+//fieldset label span:first-child {
+//  width: 10em;
+//  padding-inline-start: .5em;
+//}
+//
+//fieldset label input + span {
+//  padding-inline-start: .5em;
+//}
+//
+//
+//fieldset input[type="text"] {
+//  width: 10em;
+//}
+//
+//fieldset select {
+//  width: 10.5em;
+//}
+
+
+h1 { font-size: 1.2em; }
+
 
 fieldset {
   border: 1px solid white;
   border-radius: .2em;
+
+  legend, h3, label {
+    font-size: 1em;
+    font-family: monospace;
+  }
+
+  h3 {
+    font-weight: normal;
+    padding: .4em 0;
+    margin: 0;
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+
+    span.pre {
+      width: 10em;
+      padding-inline-start: .5em;
+    }
+
+    span.post {
+      padding-inline-start: .5em;
+    }
+
+    input[type="text"] {
+      width: 10em;
+    }
+
+    select {
+      width: 10.5em;
+    }
+  }
 }
-
-fieldset legend {
-  font-size: 1em;
-  font-family: monospace;
-}
-
-fieldset h3 {
-  font-size: 1em;
-  font-weight: normal;
-  font-family: monospace;
-  padding: .4em 0;
-  margin: 0;
-}
-
-fieldset label {
-  display: flex;
-  align-items: center;
-  font-size: 1em;
-  font-family: monospace;
-}
-
-fieldset label span:first-child {
-  width: 10em;
-  padding-inline-start: .5em;
-}
-
-fieldset label input + span {
-  padding-inline-start: .5em;
-}
-
-
-fieldset input[type="text"] {
-  width: 10em;
-}
-
-fieldset select {
-  width: 10.5em;
-}
-

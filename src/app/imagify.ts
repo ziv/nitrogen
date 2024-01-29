@@ -25,10 +25,6 @@ export function toSvg(node: HTMLElement, options?: ImagifyOptions) {
     height = node.offsetHeight,
     size = 1
   } = options ?? {};
-  if (size !== 1) {
-    width = width * size;
-    height = height * size;
-  }
   const copy = node.cloneNode(true) as HTMLElement;
   for (const [org, cloned] of pair(node, copy)) {
     if (org instanceof Element) {
@@ -37,6 +33,12 @@ export function toSvg(node: HTMLElement, options?: ImagifyOptions) {
         cloned.style.setProperty(name, computed.getPropertyValue(name), computed.getPropertyPriority(name));
       }
     }
+  }
+  if (size !== 1) {
+    width = width * size;
+    height = height * size;
+    copy.style.transform = `scale(${size})`;
+    copy.style.transformOrigin = '0 0';
   }
   copy.setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
   const raw = new XMLSerializer()

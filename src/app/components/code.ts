@@ -1,18 +1,27 @@
 import { Component, ElementRef, inject } from '@angular/core';
+import { NgClass, NgStyle } from '@angular/common';
 import { Nitro } from '../nitrogen';
-import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'nit-code',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, NgStyle],
   template: `
     <pre [style]="preStyle"
          [ngClass]="themeClass"><code [style]="codeStyle"
             [ngClass]="langClass"
             (keydown.tab)="tab($event)"
             contenteditable="true"
-      >// paste your code here</code></pre>
+      >const pluckDeep = key => obj => key.split('.').reduce((accum, key) => accum[key], obj)
+
+const compose = (...fns) => res => fns.reduce((accum, next) => next(accum), res)
+
+const unfold = (f, seed) => {{ '{' }}
+    const go = (f, seed, acc) => {{ '{' }}
+    const res = f(seed)
+    return res ? go(f, res[1], acc.concat([res[0]])) : acc
+{{ '}' }}
+  </code></pre>
   `,
   styles: `
 

@@ -1,4 +1,4 @@
-import { inject, Injectable, Input, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
@@ -33,7 +33,14 @@ export interface WindowStyle {
   footer: string;
 }
 
-export class Nitrogen implements CodeStyle, WindowStyle {
+export interface BordersStyle {
+  tl: number;
+  tr: number;
+  br: number;
+  bl: number;
+}
+
+export class Nitrogen implements CodeStyle, WindowStyle, BordersStyle {
   // window style
   displayHeader = true;
   displayIcons = true;
@@ -51,7 +58,7 @@ export class Nitrogen implements CodeStyle, WindowStyle {
   bl = 5;
 
   // CodeStyle
-  language = 'typescript';
+  language = 'javascript';
   theme = 'github'; // 'github';
   top = 10;
   bottom = 10;
@@ -75,19 +82,11 @@ export class Nitro {
   readonly zone = inject(NgZone);
   code?: Code;
 
-  @Input() languagePath = '/assets/languages.json'
-  @Input() themePath = '/assets/themes.json'
-
-  languages: string[] = [];
-  themes: string[] = [];
-
   get value() {
     return this.form.value as Nitrogen;
   }
 
   constructor() {
-    import('../data/languages').then(m => this.languages = m.default);
-    import('../data/themes').then(m => this.themes = m.default);
     hljs.configure({ignoreUnescapedHTML: true})
     hljs.registerLanguage('javascript', javascript);
     hljs.registerLanguage('typescript', typescript);
@@ -103,22 +102,18 @@ export class Nitro {
       return console.error('There is no code element to highlight. Make sure you put the <nit-code> element');
     }
     this.code.el.removeAttribute('data-highlighted');
+    // todo replace with "hljs.highlight"
     hljs.highlightElement(this.code.el);
   }
 
   download() {
-    const {sizing, transparent, backgroundColor} = this.value;
+    const {sizing} = this.value;
     const node = document.querySelector('.workspace') as HTMLElement;
-    const conf = {
-      style: {
-        transform: `scale(${sizing})`,
-        'transform-origin': '0 0',
-        background: transparent ? 'none' : backgroundColor,
-      },
-      width: node.offsetWidth * sizing,
-      height: node.offsetHeight * sizing,
-    }
-    const svg = toSvg(node, conf);
+    const svg = toSvg(node, {
+      width: node.offsetWidth,
+      height: node.offsetHeight,
+      size: sizing,
+    });
     const img = new Image();
     img.src = svg;
     this.form.patchValue({preview: img});

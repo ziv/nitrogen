@@ -10,13 +10,18 @@ export enum FieldsetTypes {
   Select = 'select'
 }
 
+export interface FieldsetItemOptions {
+  value: any;
+  label: string;
+}
+
 export interface FieldsetItem {
   type: FieldsetTypes;
   label: string;
   control: string;
   props: Record<string, string | number>;
   condition?: (value: any) => boolean;
-  options?: any[]
+  options?: FieldsetItemOptions[]
   optionsTrack?: any;
 }
 

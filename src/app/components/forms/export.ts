@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Nitro } from '../../nitrogen';
+import { Nitro } from '../../nitrogen/nitrogen';
 import { NgFor } from '@angular/common';
 
 

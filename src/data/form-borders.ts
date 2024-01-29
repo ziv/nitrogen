@@ -9,6 +9,24 @@ export default {
   legend: 'Border',
   sections: [
     {
+      items: [
+        {
+          type: FieldsetTypes.Range,
+          label: 'Width',
+          control: 'borderWidth',
+          props: {
+            min: 0,
+            max: 5,
+          }
+        },
+        {
+          type: FieldsetTypes.Color,
+          label: 'Color',
+          control: 'borderColor'
+        }
+      ]
+    },
+    {
       label: 'Radius',
       items: [
         {

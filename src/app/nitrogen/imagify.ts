@@ -34,6 +34,7 @@ export function toSvg(node: HTMLElement, options?: ImagifyOptions) {
       }
     }
   }
+  // todo complete the options...
   if (size !== 1) {
     width = width * size;
     height = height * size;

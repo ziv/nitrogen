@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { Code } from '../components/code';
 import { RouterOutlet } from '@angular/router';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { Nitro } from '../nitrogen/nitro';
-import { ThemeEditor } from '../components/theme-editor';
+import { Fields } from '../components/fields';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
@@ -64,7 +65,9 @@ import { ThemeEditor } from '../components/theme-editor';
         </main>
         <aside *ngIf="settings">
           <div>
-            <nit-theme-editor />
+            <form [formGroup]="nitro.form">
+              <nit-fields [form]="nitro.form" [fields]="nitro.formDefinition | async"/>
+            </form>
           </div>
         </aside>
       </section>
@@ -73,8 +76,10 @@ import { ThemeEditor } from '../components/theme-editor';
   imports: [
     NgIf,
     RouterOutlet,
+    ReactiveFormsModule,
+    AsyncPipe,
     Code,
-    ThemeEditor,
+    Fields,
   ]
 })
 export default class Main {

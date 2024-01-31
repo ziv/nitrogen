@@ -3,10 +3,9 @@ import { FormBuilder } from '@angular/forms';
 import type { Code } from '../components/code';
 import { toSvg } from './imagify';
 import Nitrogen from './nitrogen';
-import highlight from './highlight';
+import { highlight, init } from './highlight';
 import { from } from 'rxjs';
 
-const highlightFunc = () => import('highlight.js/lib/core').then(m => m.default);
 
 @Injectable({providedIn: 'root'})
 export class Nitro {
@@ -20,7 +19,7 @@ export class Nitro {
   }
 
   constructor() {
-    highlight()
+    init();
   }
 
   init(code: Code) {
@@ -28,14 +27,13 @@ export class Nitro {
     return this;
   }
 
-  async highlight() {
+  highlight() {
     if (!this.code) {
       return console.error('There is no code element to highlight. Make sure you put the <nit-code> element');
     }
     // todo replace with "hljs.highlight"
     this.code.el.removeAttribute('data-highlighted');
-    const func = await highlightFunc();
-    func.highlightElement(this.code?.el);
+    highlight(this.code?.el);
   }
 
   download() {

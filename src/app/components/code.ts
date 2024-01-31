@@ -1,6 +1,6 @@
 import { Component, ElementRef, inject } from '@angular/core';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
-import { Nitro } from '../nitrogen/nitrogen';
+import { Nitro } from '../nitrogen/nitro';
 
 @Component({
   selector: 'nit-code',
@@ -89,16 +89,8 @@ import { Nitro } from '../nitrogen/nitrogen';
                [ngClass]="themeClass"><code [style]="codeStyle"
                                             (keydown.tab)="tab($event)"
                                             contenteditable="true"
-          >const pluckDeep = key => obj => key.split('.').reduce((accum, key) => accum[key], obj)
-
-const compose = (...fns) => res => fns.reduce((accum, next) => next(accum), res)
-
-const unfold = (f, seed) => {{ '{' }}
-            const go = (f, seed, acc) => {{ '{' }}
-            const res = f(seed)
-    return res ? go(f, res[1], acc.concat([res[0]])) : acc
-            {{ '}' }}
-  </code></pre>
+          >const foo = (bar: string) =>
+    bar.toUpperCase();</code></pre>
         </main>
       </div>
     </div>

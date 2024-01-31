@@ -1,53 +1,45 @@
-import { inject, Injectable, NgZone } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
-import typescript from 'highlight.js/lib/languages/typescript';
-import type { Code } from '../components/code';
-import { toSvg } from './imagify';
-import Model from './model';
+export default class Nitrogen {
+  // code
+  theme = 'github';
+  language = 'javascript';
 
+  // workspace
+  backgroundColor = '#FFFFFF';
+  transparent = false;
+  dropShadow = false;
+  shadowColor = '#000000';
+  // todo complete shadow properties
 
-@Injectable({providedIn: 'root'})
-export class Nitro {
-  readonly form = inject(FormBuilder).group<Model>(new Model());
-  readonly zone = inject(NgZone);
-  code?: Code;
+  marginTop = 10;
+  marginBottom = 10;
+  marginLeft = 10;
+  marginRight = 10;
 
-  get value() {
-    return this.form.value as Model;
-  }
+  // workspace, window
+  borderColor = 'grey';
+  borderWidth = 1;
+  tl = 5;
+  tr = 5;
+  br = 5;
+  bl = 5;
 
-  constructor() {
-    hljs.configure({ignoreUnescapedHTML: true})
-    hljs.registerLanguage('javascript', javascript);
-    hljs.registerLanguage('typescript', typescript);
-  }
+  // workspace, window, header
+  displayHeader = true;
+  headerHeight = 1.5; // todo em, convert to pixels?
+  displayIcons = true;
+  displayTitle = false;
+  title = '';
+  titleSize = .8 // todo em, convert to pixels?
+  titleColor = 'grey';
 
-  init(code: Code) {
-    this.code = code;
-    return this;
-  }
+  // workspace, window, code
+  top = 10;
+  bottom = 10;
+  left = 10;
+  right = 10;
 
-  highlight() {
-    if (!this.code) {
-      return console.error('There is no code element to highlight. Make sure you put the <nit-code> element');
-    }
-    this.code.el.removeAttribute('data-highlighted');
-    // todo replace with "hljs.highlight"
-    hljs.highlightElement(this.code.el);
-  }
-
-  download() {
-    const {sizing} = this.value;
-    const node = document.querySelector('.workspace') as HTMLElement;
-    const svg = toSvg(node, {
-      width: node.offsetWidth,
-      height: node.offsetHeight,
-      size: sizing,
-    });
-    const img = new Image();
-    img.src = svg;
-    this.form.patchValue({preview: img});
-  }
+  // workspace, export
+  sizing = 2;
+  render = 'png';
+  preview: HTMLImageElement | null = null;
 }

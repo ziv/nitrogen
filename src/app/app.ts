@@ -5,9 +5,6 @@ import { RouterOutlet } from '@angular/router';
   selector: 'nit-root',
   standalone: true,
   imports: [RouterOutlet],
-  styles: [`
-
-  `],
   template: '<router-outlet />',
 })
 export class App {

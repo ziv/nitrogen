@@ -33,6 +33,7 @@ export interface FieldsetSection {
 export interface FieldsetInput {
   legend: string;
   sections: FieldsetSection[];
+  group: string;
 }
 
 @Component({
@@ -66,9 +67,6 @@ export interface FieldsetInput {
       }
 
       label {
-        display: flex;
-        align-items: center;
-
         span.pre {
           width: 10em;
           padding-inline-start: .5em;
@@ -99,7 +97,7 @@ export interface FieldsetInput {
             }
             @for (item of section.items; track item.control) {
               @if (displayItem(item)) {
-                <label>
+                <label class="f aic">
                   @if (isCheckbox(item)) {
                     <!-- todo open an Angular issue: using checkbox with dynamic input type error -->
                     <input type="checkbox" [formControlName]="item.control">

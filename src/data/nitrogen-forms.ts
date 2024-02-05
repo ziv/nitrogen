@@ -1,6 +1,7 @@
 import { FieldsetInput, FieldsetTypes } from '../app/components/fieldset';
 import themes from './themes';
 import languages from './languages';
+import { RenderOutput } from '../app/nitrogen/nitrogen';
 
 const props = {
   min: 0,
@@ -10,6 +11,7 @@ const props = {
 export default [
   {
     legend: 'Layout',
+    group: 'layout',
     sections: [
       {
         label: '',
@@ -51,13 +53,14 @@ export default [
   },
   {
     legend: 'Border',
+    group: 'borders',
     sections: [
       {
         items: [
           {
             type: FieldsetTypes.Range,
             label: 'Width',
-            control: 'borderWidth',
+            control: 'width',
             props: {
               min: 0,
               max: 5,
@@ -66,7 +69,7 @@ export default [
           {
             type: FieldsetTypes.Color,
             label: 'Color',
-            control: 'borderColor'
+            control: 'color'
           }
         ]
       },
@@ -103,6 +106,7 @@ export default [
   },
   {
     legend: 'Spacing',
+    group: 'spacing',
     sections: [
       {
         label: 'Internal',
@@ -110,25 +114,25 @@ export default [
           {
             type: FieldsetTypes.Range,
             label: 'Top',
-            control: 'top',
+            control: 'pt',
             props
           },
           {
             type: FieldsetTypes.Range,
             label: 'Right',
-            control: 'right',
+            control: 'pr',
             props
           },
           {
             type: FieldsetTypes.Range,
             label: 'Bottom',
-            control: 'bottom',
+            control: 'pb',
             props
           },
           {
             type: FieldsetTypes.Range,
             label: 'Left',
-            control: 'left',
+            control: 'pl',
             props
           }
         ]
@@ -139,25 +143,25 @@ export default [
           {
             type: FieldsetTypes.Range,
             label: 'Top',
-            control: 'marginTop',
+            control: 'mt',
             props
           },
           {
             type: FieldsetTypes.Range,
             label: 'Right',
-            control: 'marginRight',
+            control: 'mr',
             props
           },
           {
             type: FieldsetTypes.Range,
             label: 'Bottom',
-            control: 'marginBottom',
+            control: 'mb',
             props
           },
           {
             type: FieldsetTypes.Range,
             label: 'Left',
-            control: 'marginLeft',
+            control: 'ml',
             props
           }
         ]
@@ -166,6 +170,7 @@ export default [
   },
   {
     legend: 'Highlight',
+    group: 'code',
     sections: [
       {
         items: [
@@ -191,6 +196,7 @@ export default [
   },
   {
     legend: 'Export',
+    group: 'export',
     sections: [
       {
         items: [
@@ -204,6 +210,15 @@ export default [
               step: .5,
             },
           },
+          {
+            type: FieldsetTypes.Select,
+            label: 'Type',
+            control: 'render',
+            options: [
+              {value: RenderOutput.PNG, label: 'PNG'},
+              {value: RenderOutput.SVG, label: 'SVG'}
+            ]
+          }
         ],
       }
     ]

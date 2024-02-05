@@ -9,14 +9,12 @@ import { Nitro } from '../nitrogen/nitro';
   styles: [`
     :host {
       display: flex;
-      //border-color: transparent;
     }
 
     div.workspace {
       display: flex;
 
       div.border {
-        //border-radius: .5em .5em .5em .5em;
 
         header {
           height: 1.5em;
@@ -76,21 +74,19 @@ import { Nitro } from '../nitrogen/nitro';
   template: `
     <div class="workspace" [ngStyle]="workspace">
       <div class="border">
-        <header *ngIf="nitro.value.displayHeader" [ngStyle]="headerStyle">
-          <ng-container *ngIf="nitro.value.displayIcons">
+        <header *ngIf="layout.displayHeader" [ngStyle]="headerStyle">
+          <ng-container *ngIf="layout.displayIcons">
             <div class="close"></div>
             <div class="min"></div>
             <div class="max"></div>
           </ng-container>
-          <span *ngIf="nitro.value.displayTitle">{{ nitro.value.title }}</span>
+          <span *ngIf="layout.displayTitle">{{ layout.title }}</span>
         </header>
         <main [ngClass]="langClass">
           <pre [style]="preStyle"
                [ngClass]="themeClass"><code [style]="codeStyle"
                                             (keydown.tab)="tab($event)"
-                                            contenteditable="true"
-          >const foo = (bar: string) =>
-    bar.toUpperCase();</code></pre>
+                                            contenteditable="true">const foo = [1, 2, 3];</code></pre>
         </main>
       </div>
     </div>
@@ -100,49 +96,76 @@ export class Code {
   protected readonly ref = inject(ElementRef);
   protected readonly nitro = inject(Nitro).init(this);
 
-  get el() {
+  get el(): HTMLElement {
     return this.ref.nativeElement.querySelector('code')
   }
 
+  // accessors for groups data
+
+  get code() {
+    return this.nitro.value.code;
+  }
+
+  get borders() {
+    return this.nitro.value.borders;
+  }
+
+  get layout() {
+    return this.nitro.value.layout;
+  }
+
+  get spacing() {
+    return this.nitro.value.spacing;
+  }
+
+  get exports() {
+    return this.nitro.value.export;
+  }
+
+  // styles/classes helpers
+
   get themeClass() {
-    return this.nitro.value.theme ? `theme-${this.nitro.value.theme}` : '';
+    return this.code.theme ? `theme-${this.code.theme}` : '';
   }
 
   get langClass() {
-    return this.nitro.value.language ? `language-${this.nitro.value.language}` : '';
+    return this.code.language ? `language-${this.code.language}` : '';
   }
 
   get preStyle() {
-    const {displayHeader, tr, tl, br, bl} = this.nitro.value;
+    const {br, bl, tl, tr, width, color} = this.borders;
+    const {displayHeader} = this.layout;
+
     return {
-      border: '2px solid grey',
+      border: `${width}px solid ${color}`,
       borderRadius: displayHeader ? `0 0 ${br}px ${bl}px` : `${tl}px ${tr}px ${br}px ${bl}px`,
-      borderTop: displayHeader ? '0' : '1px solid grey',
+      borderTop: displayHeader ? '0' : '${width}px solid ${color}',
     };
   }
 
   get codeStyle() {
-    const {top, bottom, left, right} = this.nitro.value;
+    const {pl, pr, pt, pb} = this.spacing;
     return {
-      padding: `${top}px ${right}px ${bottom}px ${left}px`,
+      padding: `${pt}px ${pr}px ${pb}px ${pl}px`,
     };
   }
 
   get headerStyle() {
-    const {tr, tl} = this.nitro.value;
+    const {tr, tl} = this.borders;
     return {
       borderRadius: `${tl}px ${tr}px 0 0`,
     };
   }
 
   get workspace() {
-    const {backgroundColor, marginTop, marginRight, marginBottom, marginLeft, transparent} = this.nitro.value;
+    const {backgroundColor, transparent} = this.layout;
+    const {ml, mr, mt, mb} = this.spacing;
     return {
-      backgroundColor: transparent ? 'transparent': backgroundColor,
-      paddingTop: `${marginTop}px`,
-      paddingRight: `${marginRight}px`,
-      paddingBottom: `${marginBottom}px`,
-      paddingLeft: `${marginLeft}px`,
+      backgroundColor: transparent ? 'transparent' : backgroundColor,
+      paddingTop: `${mt}px`,
+      paddingRight: `${mr}px`,
+      paddingBottom: `${mb}px`,
+      paddingLeft: `${ml}px`,
     };
   }
 

@@ -10,18 +10,22 @@ import { Fieldset, FieldsetInput } from './fieldset';
   imports: [ReactiveFormsModule, NgIf, NgFor, Fieldset],
   template: `
     @if (form && fields && fields.length) {
-      @for (def of fields; track def.legend) {
-        <nit-fieldset [form]="form" [def]="def"></nit-fieldset>
+      @for (def of fields; track def.group) {
+        <nit-fieldset [form]="group(def)" [def]="def"></nit-fieldset>
       }
     }`
 })
 export class Fields implements AfterViewInit, OnDestroy {
   private sub?: Subscription;
-  @ViewChildren(Fieldset) private _fs!: QueryList<Fieldset>;
+  @ViewChildren(Fieldset) private fs!: QueryList<Fieldset>;
 
-  @Input() form?: FormGroup;
+  @Input() form!: FormGroup;
   @Input() fields: FieldsetInput[] | null = null;
   @Input() autoClose = true;
+
+  group(def: FieldsetInput) {
+    return this.form.get(def.group) as FormGroup;
+  }
 
   ngAfterViewInit() {
     if (!this.autoClose) {
@@ -29,12 +33,12 @@ export class Fields implements AfterViewInit, OnDestroy {
     }
     this.sub?.unsubscribe();
 
-    const switchTo = () => merge(...this._fs.map((field: Fieldset) => field.changed.pipe(
+    const switchTo = () => merge(...this.fs.map((field: Fieldset) => field.changed.pipe(
       map(() => field),
       filter(field => field.expand),
     )));
-    this.sub = this._fs.changes.pipe(switchMap(switchTo)).subscribe(field => {
-      for (const f of this._fs) {
+    this.sub = this.fs.changes.pipe(switchMap(switchTo)).subscribe(field => {
+      for (const f of this.fs) {
         if (f != field) f.expand = false;
       }
     });

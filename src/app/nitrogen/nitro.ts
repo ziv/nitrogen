@@ -1,51 +1,50 @@
-import { inject, Injectable, NgZone } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import type { Code } from '../components/code';
-import { toSvg } from './imagify';
-import Nitrogen from './nitrogen';
+import { toPng } from './imagify';
+import Nitrogen, { nitroDef, nitroForm } from './nitrogen';
 import { highlight, init } from './highlight';
-import { from } from 'rxjs';
-
 
 @Injectable({providedIn: 'root'})
 export class Nitro {
-  readonly form = inject(FormBuilder).group<Nitrogen>(new Nitrogen());
-  readonly formDefinition =from(import('../../data/nitrogen-forms').then(m => m.default));
-  readonly zone = inject(NgZone);
-  code?: Code;
+  readonly form = nitroForm(inject(FormBuilder));
+  readonly formDefinition = nitroDef();
+  component!: Code;
 
   get value() {
-    return this.form.value as Nitrogen;
+    return this.form.value as unknown as Nitrogen;
   }
 
   constructor() {
     init();
   }
 
-  init(code: Code) {
-    this.code = code;
+  init(component: Code) {
+    this.component = component;
     return this;
   }
 
   highlight() {
-    if (!this.code) {
-      return console.error('There is no code element to highlight. Make sure you put the <nit-code> element');
-    }
-    // todo replace with "hljs.highlight"
-    this.code.el.removeAttribute('data-highlighted');
-    highlight(this.code?.el);
+    this.assert();
+    this.component.el.removeAttribute('data-highlighted');
+    highlight(this.component?.el);
   }
 
-  download() {
-    const {sizing} = this.value;
+  async download() {
+    this.assert();
+    const {sizing} = this.value.export;
     const node = document.querySelector('.workspace') as HTMLElement;
-    const svg = toSvg(node, {
-      width: node.offsetWidth,
-      height: node.offsetHeight,
-      size: sizing,
-    });
-    const img = new Image();
-    img.src = svg;
-    this.form.patchValue({preview: img});
+    const png = await toPng(node, {sizing});
+    const link = document.createElement('a');
+    link.download = 'nitrogen.png';
+    link.href = png;
+    document.body.appendChild(link);
+    link.click();
+  }
+
+  private assert() {
+    if (!this.component) {
+      throw new Error('There is no code element to highlight. Make sure you put the <nit-code> element');
+    }
   }
 }

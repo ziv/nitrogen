@@ -1,16 +1,17 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Code } from './components/code';
 import { Fields } from './components/fields';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Nitro } from './nitrogen/nitro';
+import Nitrogen, { Model } from './nitrogen/nitrogen';
 
 @Component({
-  selector: 'nit-root',
-  standalone: true,
-  imports: [RouterOutlet, AsyncPipe, Code, Fields, NgIf, ReactiveFormsModule],
-  styles: [`
+    selector: 'nit-root',
+    standalone: true,
+    imports: [RouterOutlet, AsyncPipe, Code, Fields, NgIf, ReactiveFormsModule],
+    styles: [`
     // todo colors/heights from vars
     :host {
       position: fixed;
@@ -41,7 +42,7 @@ import { Nitro } from './nitrogen/nitro';
       }
     }
   `],
-  template: `
+    template: `
     <div class="f">
       <main class="f f1 fdc aic">
         <header class="f aic jcc">
@@ -63,7 +64,12 @@ import { Nitro } from './nitrogen/nitro';
     </div>
   `
 })
-export class App {
-  protected readonly nitro = inject(Nitro);
-  protected settings = true;
+export class App implements OnInit {
+    protected readonly nitro = inject(Nitro);
+    protected settings = true;
+
+    ngOnInit() {
+        this.nitro.form.setValue(new Nitrogen() as unknown as Model);
+        this.nitro.highlight();
+    }
 }

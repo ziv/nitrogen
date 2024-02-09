@@ -1,17 +1,19 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgFor, NgIf } from '@angular/common';
+import { IconsField } from './icons-field';
 
 export enum FieldsetTypes {
   Range = 'range',
   Checkbox = 'checkbox',
   Color = 'color',
   Text = 'text',
-  Select = 'select'
+  Select = 'select',
+  Icons = 'icons'
 }
 
 export interface FieldsetItemOptions {
-  value: any;
+  value: string | number | boolean | object;
   label: string;
 }
 
@@ -20,9 +22,9 @@ export interface FieldsetItem {
   label: string;
   control: string;
   props: Record<string, string | number>;
-  condition?: (value: any) => boolean;
+  condition?: (value: object) => boolean;
   options?: FieldsetItemOptions[]
-  optionsTrack?: any;
+  unit?: string;
 }
 
 export interface FieldsetSection {
@@ -37,10 +39,10 @@ export interface FieldsetInput {
 }
 
 @Component({
-  selector: 'nit-fieldset',
-  standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgFor],
-  styles: [`
+    selector: 'nit-fieldset',
+    standalone: true,
+    imports: [ReactiveFormsModule, NgIf, NgFor, IconsField],
+    styles: [`
     fieldset {
       border: 0;
       padding: 0;
@@ -86,7 +88,7 @@ export interface FieldsetInput {
       }
     }
   `],
-  template: `
+    template: `
     @if (form && def) {
       <fieldset [formGroup]="form">
         <legend (click)="expand=!expand;changed.emit()">{{ def.legend }}</legend>
@@ -119,6 +121,8 @@ export interface FieldsetInput {
                         <option [ngValue]="el.value">{{ el.label }}</option>
                       }
                     </select>
+                  } @else if (isIcons(item)) {
+                    <nit-icons-field [formControlName]="item.control"></nit-icons-field>
                   }
                 </label>
               }
@@ -130,33 +134,37 @@ export interface FieldsetInput {
   `
 })
 export class Fieldset {
-  expand = false;
+    expand = false;
   @Input() form?: FormGroup;
   @Input() def?: FieldsetInput | null;
 
   @Output() changed = new EventEmitter<void>();
 
   displayItem(item: FieldsetItem) {
-    return item.condition ? item.condition(this.form?.value) : true;
+      return item.condition ? item.condition(this.form?.value) : true;
   }
 
   isRange(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Range;
+      return item.type === FieldsetTypes.Range;
   }
 
   isCheckbox(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Checkbox;
+      return item.type === FieldsetTypes.Checkbox;
   }
 
   isColor(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Color;
+      return item.type === FieldsetTypes.Color;
   }
 
   isText(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Text;
+      return item.type === FieldsetTypes.Text;
   }
 
   isSelect(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Select;
+      return item.type === FieldsetTypes.Select;
+  }
+
+  isIcons(item: FieldsetItem) {
+      return item.type === FieldsetTypes.Icons;
   }
 }

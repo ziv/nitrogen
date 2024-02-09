@@ -8,10 +8,10 @@ import { Nitro } from './nitrogen/nitro';
 import Nitrogen, { Model } from './nitrogen/nitrogen';
 
 @Component({
-    selector: 'nit-root',
-    standalone: true,
-    imports: [RouterOutlet, AsyncPipe, Code, Fields, NgIf, ReactiveFormsModule],
-    styles: [`
+  selector: 'nit-root',
+  standalone: true,
+  imports: [RouterOutlet, AsyncPipe, Code, Fields, NgIf, ReactiveFormsModule],
+  styles: [`
     // todo colors/heights from vars
     :host {
       position: fixed;
@@ -42,7 +42,7 @@ import Nitrogen, { Model } from './nitrogen/nitrogen';
       }
     }
   `],
-    template: `
+  template: `
     <div class="f">
       <main class="f f1 fdc aic">
         <header class="f aic jcc">
@@ -65,11 +65,11 @@ import Nitrogen, { Model } from './nitrogen/nitrogen';
   `
 })
 export class App implements OnInit {
-    protected readonly nitro = inject(Nitro);
-    protected settings = true;
+  protected readonly nitro = inject(Nitro);
+  protected settings = true;
 
-    ngOnInit() {
-        this.nitro.form.setValue(new Nitrogen() as unknown as Model);
-        this.nitro.highlight();
-    }
+  ngOnInit() {
+    this.nitro.form.setValue(new Nitrogen() as unknown as Model);
+    this.nitro.highlight();
+  }
 }

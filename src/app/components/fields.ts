@@ -5,10 +5,10 @@ import { filter, map, merge, Subscription, switchMap } from 'rxjs';
 import { Fieldset, FieldsetInput } from './fieldset';
 
 @Component({
-    selector: 'nit-fields',
-    standalone: true,
-    imports: [ReactiveFormsModule, NgIf, NgFor, Fieldset],
-    template: `
+  selector: 'nit-fields',
+  standalone: true,
+  imports: [ReactiveFormsModule, NgIf, NgFor, Fieldset],
+  template: `
     @if (form && fields && fields.length) {
       @for (def of fields; track def.group) {
         <nit-fieldset [form]="group(def)" [def]="def"></nit-fieldset>
@@ -16,7 +16,7 @@ import { Fieldset, FieldsetInput } from './fieldset';
     }`
 })
 export class Fields implements AfterViewInit, OnDestroy {
-    private sub?: Subscription;
+  private sub?: Subscription;
   @ViewChildren(Fieldset) private fs!: QueryList<Fieldset>;
 
   @Input() form!: FormGroup;
@@ -24,27 +24,27 @@ export class Fields implements AfterViewInit, OnDestroy {
   @Input() autoClose = true;
 
   group(def: FieldsetInput) {
-      return this.form.get(def.group) as FormGroup;
+    return this.form.get(def.group) as FormGroup;
   }
 
   ngAfterViewInit() {
-      if (!this.autoClose) {
-          return;
-      }
-      this.sub?.unsubscribe();
+    if (!this.autoClose) {
+      return;
+    }
+    this.sub?.unsubscribe();
 
-      const switchTo = () => merge(...this.fs.map((field: Fieldset) => field.changed.pipe(
-          map(() => field),
-          filter(field => field.expand),
-      )));
-      this.sub = this.fs.changes.pipe(switchMap(switchTo)).subscribe(field => {
-          for (const f of this.fs) {
-              if (f != field) f.expand = false;
-          }
-      });
+    const switchTo = () => merge(...this.fs.map((field: Fieldset) => field.changed.pipe(
+      map(() => field),
+      filter(field => field.expand),
+    )));
+    this.sub = this.fs.changes.pipe(switchMap(switchTo)).subscribe(field => {
+      for (const f of this.fs) {
+        if (f != field) f.expand = false;
+      }
+    });
   }
 
   ngOnDestroy() {
-      this.sub?.unsubscribe();
+    this.sub?.unsubscribe();
   }
 }

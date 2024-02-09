@@ -4,11 +4,11 @@ import typescript from 'highlight.js/lib/languages/typescript';
 
 
 export function init() {
-    hljs.configure({ignoreUnescapedHTML: true});
-    hljs.registerLanguage('javascript', javascript);
-    hljs.registerLanguage('typescript', typescript);
+  hljs.configure({ignoreUnescapedHTML: true});
+  hljs.registerLanguage('javascript', javascript);
+  hljs.registerLanguage('typescript', typescript);
 }
 
 export function highlight(el: HTMLElement) {
-    hljs.highlightElement(el);
+  hljs.highlightElement(el);
 }

@@ -22,7 +22,7 @@ export interface FieldsetItem {
   label: string;
   control: string;
   props: Record<string, string | number>;
-  condition?: (value: object) => boolean;
+  condition?: (value: Record<string, unknown>) => boolean;
   options?: FieldsetItemOptions[]
   unit?: string;
 }
@@ -39,10 +39,10 @@ export interface FieldsetInput {
 }
 
 @Component({
-    selector: 'nit-fieldset',
-    standalone: true,
-    imports: [ReactiveFormsModule, NgIf, NgFor, IconsField],
-    styles: [`
+  selector: 'nit-fieldset',
+  standalone: true,
+  imports: [ReactiveFormsModule, NgIf, NgFor, IconsField],
+  styles: [`
     fieldset {
       border: 0;
       padding: 0;
@@ -88,7 +88,7 @@ export interface FieldsetInput {
       }
     }
   `],
-    template: `
+  template: `
     @if (form && def) {
       <fieldset [formGroup]="form">
         <legend (click)="expand=!expand;changed.emit()">{{ def.legend }}</legend>
@@ -134,37 +134,37 @@ export interface FieldsetInput {
   `
 })
 export class Fieldset {
-    expand = false;
+  expand = false;
   @Input() form?: FormGroup;
   @Input() def?: FieldsetInput | null;
 
   @Output() changed = new EventEmitter<void>();
 
   displayItem(item: FieldsetItem) {
-      return item.condition ? item.condition(this.form?.value) : true;
+    return item.condition ? item.condition(this.form?.value) : true;
   }
 
   isRange(item: FieldsetItem) {
-      return item.type === FieldsetTypes.Range;
+    return item.type === FieldsetTypes.Range;
   }
 
   isCheckbox(item: FieldsetItem) {
-      return item.type === FieldsetTypes.Checkbox;
+    return item.type === FieldsetTypes.Checkbox;
   }
 
   isColor(item: FieldsetItem) {
-      return item.type === FieldsetTypes.Color;
+    return item.type === FieldsetTypes.Color;
   }
 
   isText(item: FieldsetItem) {
-      return item.type === FieldsetTypes.Text;
+    return item.type === FieldsetTypes.Text;
   }
 
   isSelect(item: FieldsetItem) {
-      return item.type === FieldsetTypes.Select;
+    return item.type === FieldsetTypes.Select;
   }
 
   isIcons(item: FieldsetItem) {
-      return item.type === FieldsetTypes.Icons;
+    return item.type === FieldsetTypes.Icons;
   }
 }

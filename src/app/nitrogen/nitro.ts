@@ -2,12 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import type { Code } from '../components/code';
 import { toPng } from './imagify';
-import Nitrogen, { nitroDef, nitroForm } from './nitrogen';
+import Nitrogen, { Model, nitroDef, nitroForm } from './nitrogen';
 import { highlight, init } from './highlight';
 
 @Injectable({providedIn: 'root'})
 export class Nitro {
-  readonly form = nitroForm(inject(FormBuilder), new Nitrogen());
+  readonly form = nitroForm(inject(FormBuilder), new Nitrogen() as unknown as Model);
   readonly formDefinition = nitroDef();
   component!: Code;
 

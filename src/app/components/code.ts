@@ -1,6 +1,8 @@
 import { Component, ElementRef, inject } from '@angular/core';
 import { NgClass, NgIf, NgStyle } from '@angular/common';
 import { Nitro } from '../nitrogen/nitro';
+import { highlight } from '../nitrogen/highlight';
+import { NitIcon } from './icons-field';
 
 @Component({
   selector: 'nit-code',
@@ -12,10 +14,7 @@ import { Nitro } from '../nitrogen/nitro';
     }
 
     div.workspace {
-      display: flex;
-
-      div.border {
-
+      div.inner {
         header {
           height: 1.5em;
           background-color: black;
@@ -26,23 +25,11 @@ import { Nitro } from '../nitrogen/nitro';
             font-size: .8em;
           }
 
-          .close, .min, .max {
+          .icon {
             width: .5em;
             height: .5em;
             border-radius: 50%;
             margin-right: .2em;
-          }
-
-          .close {
-            background: #FF5D5B;
-          }
-
-          .min {
-            background: #FFBB39;
-          }
-
-          .max {
-            background: #00CD4E;
           }
         }
 
@@ -70,16 +57,20 @@ import { Nitro } from '../nitrogen/nitro';
 
   `],
   template: `
-    <div class="workspace" [ngStyle]="workspace">
-      <div class="border">
-        <header class="f aic" [ngStyle]="headerStyle">
-          <ng-container *ngIf="layout.displayIcons">
-            <div class="close"></div>
-            <div class="min"></div>
-            <div class="max"></div>
-          </ng-container>
-          <span *ngIf="layout.displayTitle">{{ layout.title }}</span>
-        </header>
+    <div class="workspace f" [ngStyle]="workspace">
+      <div class="inner">
+        @if (header.display) {
+          <header class="f aic" [ngStyle]="headerStyle">
+            @if (icons.display) {
+              @for (icon of icons.icons; track icon.id) {
+                <div class="icon" [ngStyle]="iconStyle(icon)"></div>
+              }
+            }
+            @if (header.title) {
+              <span [ngStyle]="titleStyle">{{ header.title }}</span>
+            }
+          </header>
+        }
         <main [ngClass]="langClass">
           <pre [style]="preStyle"
                [ngClass]="themeClass"><code [style]="codeStyle"
@@ -92,7 +83,14 @@ import { Nitro } from '../nitrogen/nitro';
 })
 export class Code {
   protected readonly ref = inject(ElementRef);
-  protected readonly nitro = inject(Nitro).init(this);
+  protected readonly nitro = inject(Nitro); // .init(this);
+
+  highlight() {
+    const el = this.ref.nativeElement.querySelector('code');
+    el.removeAttribute('data-highlighted');
+    highlight(el);
+  }
+
 
   get el(): HTMLElement {
     return this.ref.nativeElement.querySelector('code');
@@ -100,24 +98,34 @@ export class Code {
 
   // accessors for groups data
 
+  get header() {
+    return this.nitro.nitrogen.header ?? {};
+  }
+
+
+  get icons() {
+    return this.nitro.nitrogen.icons ?? {};
+  }
+
+
   get code() {
-    return this.nitro.value.code;
+    return this.nitro.nitrogen.code ?? {};
   }
 
   get borders() {
-    return this.nitro.value.borders;
+    return this.nitro.nitrogen.borders ?? {};
   }
 
   get layout() {
-    return this.nitro.value.layout;
+    return this.nitro.nitrogen.layout ?? {};
   }
 
   get spacing() {
-    return this.nitro.value.spacing;
+    return this.nitro.nitrogen.spacing ?? {};
   }
 
   get exports() {
-    return this.nitro.value.export;
+    return this.nitro.nitrogen.export ?? {};
   }
 
   // styles/classes helpers
@@ -130,9 +138,26 @@ export class Code {
     return this.code.language ? `language-${this.code.language}` : '';
   }
 
+
+  // ngStyles helpers
+  iconStyle({backgroundColor, display}: NitIcon) {
+    return {
+      display: display ? 'block' : 'none',
+      backgroundColor
+    };
+  }
+
+  get titleStyle() {
+    const {color} = this.header;
+    return {
+      color: color
+    };
+  }
+
+
   get preStyle() {
-    const {br, bl, tl, tr, width, color} = this.borders;
-    const {displayHeader} = this.layout;
+    const {br, bl, tl, tr, width, color} = this.borders ?? {};
+    const displayHeader = true;
 
     return {
       border: `${width}px solid ${color}`,
@@ -142,16 +167,18 @@ export class Code {
   }
 
   get codeStyle() {
-    const {pl, pr, pt, pb} = this.spacing;
+    const {pl, pr, pt, pb} = this.spacing ?? {};
     return {
       padding: `${pt}px ${pr}px ${pb}px ${pl}px`,
     };
   }
 
   get headerStyle() {
+    const {backgroundColor, transparent} = this.header;
     const {tr, tl} = this.borders;
     return {
       borderRadius: `${tl}px ${tr}px 0 0`,
+      backgroundColor: transparent ? 'transparent' : backgroundColor,
     };
   }
 
@@ -167,6 +194,11 @@ export class Code {
     };
   }
 
+  /**
+   * Keep the cursor in the editable area
+   * @param e
+   * @protected
+   */
   protected tab(e: Event) {
     e.preventDefault();
     const selection = getSelection() as Selection;

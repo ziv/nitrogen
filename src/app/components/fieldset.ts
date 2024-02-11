@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { NgFor, NgIf } from '@angular/common';
 import { IconsField } from './icons-field';
 
 export enum FieldsetTypes {
   Range = 'range',
+  Number = 'number',
   Checkbox = 'checkbox',
   Color = 'color',
   Text = 'text',
@@ -41,7 +41,7 @@ export interface FieldsetInput {
 @Component({
   selector: 'nit-fieldset',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgFor, IconsField],
+  imports: [ReactiveFormsModule, IconsField],
   styles: [`
     fieldset {
       border: 0;
@@ -91,7 +91,7 @@ export interface FieldsetInput {
   template: `
     @if (form && def) {
       <fieldset [formGroup]="form">
-        <legend (click)="expand=!expand;changed.emit()">{{ def.legend }}</legend>
+        <legend (click)="expand=!expand;changed.emit(this)">{{ def.legend }}</legend>
         @if (expand) {
           @for (section of def.sections; track section.label) {
             @if (section.label) {
@@ -100,29 +100,36 @@ export interface FieldsetInput {
             @for (item of section.items; track item.control) {
               @if (displayItem(item)) {
                 <label class="f aic">
-                  @if (isCheckbox(item)) {
-                    <!-- todo open an Angular issue: using checkbox with dynamic input type error -->
-                    <input type="checkbox" [formControlName]="item.control">
-                    <span class="post">{{ item.label }}</span>
-                  } @else if (isRange(item)) {
-                    <span class="pre">{{ item.label }}</span>
-                    <input [type]="item.type" [formControlName]="item.control"
-                           [max]="item.props['max']" [min]="item.props['min']">
-                  } @else if (isColor(item)) {
-                    <input [type]="item.type" [formControlName]="item.control">
-                    <span class="post">{{ item.label }}</span>
-                  } @else if (isText(item)) {
-                    <span class="pre">{{ item.label }}</span>
-                    <input [type]="item.type" [formControlName]="item.control">
-                  } @else if (isSelect(item)) {
-                    <span class="pre">{{ item.label }}</span>
-                    <select [formControlName]="item.control">
-                      @for (el of item.options; track el.label) {
-                        <option [ngValue]="el.value">{{ el.label }}</option>
-                      }
-                    </select>
-                  } @else if (isIcons(item)) {
-                    <nit-icons-field [formControlName]="item.control"></nit-icons-field>
+                  @switch (item.type) {
+                    @case (types.Checkbox) {
+                      <!-- todo open an Angular issue: using checkbox with dynamic input type raise an error -->
+                      <input type="checkbox" [formControlName]="item.control">
+                      <span class="post">{{ item.label }}</span>
+                    }
+                    @case (types.Range) {
+                      <span class="pre">{{ item.label }}</span>
+                      <input [type]="item.type" [formControlName]="item.control"
+                             [max]="item.props['max']" [min]="item.props['min']">
+                    }
+                    @case (types.Color) {
+                      <input [type]="item.type" [formControlName]="item.control">
+                      <span class="post">{{ item.label }}</span>
+                    }
+                    @case (types.Text) {
+                      <span class="pre">{{ item.label }}</span>
+                      <input [type]="item.type" [formControlName]="item.control">
+                    }
+                    @case (types.Select) {
+                      <span class="pre">{{ item.label }}</span>
+                      <select [formControlName]="item.control">
+                        @for (el of item.options; track el.label) {
+                          <option [ngValue]="el.value">{{ el.label }}</option>
+                        }
+                      </select>
+                    }
+                    @case (types.Icons) {
+                      <nit-icons-field [formControlName]="item.control"></nit-icons-field>
+                    }
                   }
                 </label>
               }
@@ -134,37 +141,21 @@ export interface FieldsetInput {
   `
 })
 export class Fieldset {
-  expand = false;
+  protected types = FieldsetTypes;
+  protected expand = false;
   @Input() form?: FormGroup;
   @Input() def?: FieldsetInput | null;
+  @Output() changed = new EventEmitter<Fieldset>();
 
-  @Output() changed = new EventEmitter<void>();
+  get open() {
+    return this.expand;
+  }
+
+  close() {
+    this.expand = false;
+  }
 
   displayItem(item: FieldsetItem) {
     return item.condition ? item.condition(this.form?.value) : true;
-  }
-
-  isRange(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Range;
-  }
-
-  isCheckbox(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Checkbox;
-  }
-
-  isColor(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Color;
-  }
-
-  isText(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Text;
-  }
-
-  isSelect(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Select;
-  }
-
-  isIcons(item: FieldsetItem) {
-    return item.type === FieldsetTypes.Icons;
   }
 }

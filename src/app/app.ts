@@ -1,11 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Code } from './components/code';
 import { Fields } from './components/fields';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Nitro } from './nitrogen/nitro';
-import Nitrogen, { Model } from './nitrogen/nitrogen';
 
 @Component({
   selector: 'nit-root',
@@ -47,29 +45,21 @@ import Nitrogen, { Model } from './nitrogen/nitrogen';
       <main class="f f1 fdc aic">
         <header class="f aic jcc">
           <button class="ico" (click)="settings=!settings">settings</button>
-          <button (click)="nitro.highlight()">HIGHLIGHT</button>
-          <button (click)="nitro.download()">EXPORT</button>
+          <button (click)="code.highlight()">HIGHLIGHT</button>
+          <button>EXPORT</button>
         </header>
         <section *ngIf="!settings">Common Editor</section>
         <article class="f f1 aic jcc">
-          <nit-code/>
+          <nit-code #code/>
         </article>
       </main>
       <aside *ngIf="settings">
         <header class="f aic jcc">SETTINGS</header>
-        <form [formGroup]="nitro.form">
-          <nit-fields [form]="nitro.form" [fields]="nitro.formDefinition | async"/>
-        </form>
+        <nit-fields></nit-fields>
       </aside>
     </div>
   `
 })
-export class App implements OnInit {
-  protected readonly nitro = inject(Nitro);
+export class App {
   protected settings = true;
-
-  ngOnInit() {
-    this.nitro.form.setValue(new Nitrogen() as unknown as Model);
-    this.nitro.highlight();
-  }
 }

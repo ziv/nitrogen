@@ -19,7 +19,7 @@ export type NitIcon = { display: boolean, backgroundColor: string; id: string; }
   template: `
     @for (icon of icons; track icon.id) {
       <section>
-        <span>{{icon.id}}</span>
+        <span>{{ icon.id }}</span>
         <label>
           <input type="checkbox" [checked]="icon.display" (change)="update($event, icon.id)" [disabled]="disabled">
           <span>Display</span>
@@ -33,7 +33,8 @@ export type NitIcon = { display: boolean, backgroundColor: string; id: string; }
   `
 })
 export class IconsField implements ControlValueAccessor {
-  onChange = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onChange = (icons: NitIcon[]) => {
   };
   onTouched = () => {
   };

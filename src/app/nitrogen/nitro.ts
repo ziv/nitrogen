@@ -1,51 +1,48 @@
-import { inject, Injectable } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import type { Code } from '../components/code';
-import { toPng } from './imagify';
-import Nitrogen, { Model, nitroDef, nitroForm } from './nitrogen';
-import { highlight, init } from './highlight';
+import { Injectable } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import Nitrogen, { nitroDef, nitroForm } from './nitrogen';
+import { FieldsetInput } from '../components/fieldset';
+import { init } from './highlight';
 
 @Injectable({providedIn: 'root'})
 export class Nitro {
-  readonly form = nitroForm(inject(FormBuilder), new Nitrogen() as unknown as Model);
-  readonly formDefinition = nitroDef();
-  component!: Code;
+  definition?: FieldsetInput[];
+  form?: FormGroup;
 
-  get value() {
-    return this.form.value as unknown as Nitrogen;
+  get nitrogen(): Nitrogen {
+    return this.form?.value ?? {};
   }
 
   constructor() {
-    // load the highlighter lib
-    init();
-  }
-
-  init(component: Code) {
-    this.component = component;
-    return this;
+    nitroDef().then(definition => {
+      init();
+      this.definition = definition;
+      this.form = nitroForm(definition);
+      this.form.setValue(new Nitrogen());
+    });
   }
 
   highlight() {
-    this.assert();
-    this.component.el.removeAttribute('data-highlighted');
-    highlight(this.component?.el);
+    // this.assert();
+    // this.component.el.removeAttribute('data-highlighted');
+    // highlight(this.component?.el);
   }
 
   async download() {
-    this.assert();
-    const {sizing} = this.value.export;
-    const node = document.querySelector('.workspace') as HTMLElement;
-    const png = await toPng(node, {sizing});
-    const link = document.createElement('a');
-    link.download = 'nitrogen.png';
-    link.href = png;
-    document.body.appendChild(link);
-    link.click();
+    // this.assert();
+    // const {sizing} = this.value.export;
+    // const node = document.querySelector('.workspace') as HTMLElement;
+    // const png = await toPng(node, {sizing});
+    // const link = document.createElement('a');
+    // link.download = 'nitrogen.png';
+    // link.href = png;
+    // document.body.appendChild(link);
+    // link.click();
   }
 
   private assert() {
-    if (!this.component) {
-      throw new Error('There is no code element to highlight. Make sure you put the <nit-code> element');
-    }
+    // if (!this.component) {
+    //   throw new Error('There is no code element to highlight. Make sure you put the <nit-code> element');
+    // }
   }
 }

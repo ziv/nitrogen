@@ -1,27 +1,38 @@
 import { FormBuilder } from '@angular/forms';
-import { from } from 'rxjs';
+import { FieldsetInput, FieldsetTypes } from '../components/fieldset';
+import { NitIcon } from '../components/icons-field';
 
 export enum RenderOutput {
   PNG,
   SVG
 }
 
-export function nitroDef() {
-  return from(import('../../data/nitrogen-forms').then(m => m.default));
+export async function nitroDef() {
+  return import('../../data/nitrogen-forms').then(m => m.default);
 }
 
-export type Model = Record<string, Record<string, Record<string, string | number | unknown[]>>>;
-
-export function nitroForm(fb: FormBuilder, m: Model) {
-  const form: Record<string, unknown> = {};
-  for (const g in m) {
-    const group: Record<string, unknown> = {};
-    for (const key in m[g]) {
-      group[key] = Array.isArray(m[g][key]) ? [[]] : [m[g][key]];
+export function nitroForm(fieldsetInputs: FieldsetInput[]) {
+  const fb = new FormBuilder();
+  const map: Record<FieldsetTypes, unknown> = {
+    [FieldsetTypes.Icons]: [],
+    [FieldsetTypes.Checkbox]: true,
+    [FieldsetTypes.Range]: 0,
+    [FieldsetTypes.Number]: 0,
+    [FieldsetTypes.Text]: '',
+    [FieldsetTypes.Select]: '',
+    [FieldsetTypes.Color]: '',
+  };
+  const root: Record<string, unknown> = {};
+  for (const group of fieldsetInputs) {
+    const sub: Record<string, unknown> = {};
+    for (const section of group.sections) {
+      for (const item of section.items) {
+        sub[item.control] = [map[item.type]];
+      }
     }
-    form[g] = fb.group(group);
+    root[group.group] = fb.group(sub);
   }
-  return fb.group(form);
+  return fb.group(root);
 }
 
 export default class Nitrogen {
@@ -44,8 +55,9 @@ export default class Nitrogen {
     bl: 5,
   };
   header = {
-    display: false,
+    display: true,
     title: '',
+    color: '#FF0000',
     backgroundColor: '#FFFFFF',
     transparent: true,
   };
@@ -68,15 +80,11 @@ export default class Nitrogen {
         backgroundColor: '#00CD4E',
         id: 'c'
       },
-    ]
+    ] as NitIcon[]
   };
   layout = {
     backgroundColor: '#FFFFFF',
-    transparent: false,
-    displayHeader: true,
-    displayTitle: false,
-    title: '',
-    displayIcons: true,
+    transparent: false
   };
   code = {
     theme: 'github',
@@ -86,52 +94,4 @@ export default class Nitrogen {
     sizing: 2,
     render: RenderOutput.PNG,
   };
-    // code
-    // theme = 'github';
-    // language = 'javascript';
-
-  // workspace
-  // backgroundColor = '#FFFFFF';
-  // transparent = false;
-
-  // dropShadow = false;
-  // shadowX = 5;
-  // shadowY = 5;
-  // shadowBlur = 5;
-  // shadowColor = '#000000';
-
-  // marginTop = 10;
-  // marginBottom = 10;
-  // marginLeft = 10;
-  // marginRight = 10;
-
-  // workspace, window
-  // borderColor = 'grey';
-  // borderWidth = 1;
-  // tl = 5;
-  // tr = 5;
-  // br = 5;
-  // bl = 5;
-
-  // workspace, window, header
-  // displayHeader = true;
-  // headerHeight = 1.5; // todo em, convert to pixels?
-  // displayIcons = true;
-  // displayTitle = false;
-  // title = '';
-
-  // titleSize = .8 // todo em, convert to pixels?
-  // titleColor = 'grey';
-
-  // workspace, window, code
-  // top = 10;
-  // bottom = 10;
-  // left = 10;
-  // right = 10;
-
-  // workspace, export
-  // sizing = 2;
-  // render = 'png';
-
-  // preview: HTMLImageElement | null = null;
 }

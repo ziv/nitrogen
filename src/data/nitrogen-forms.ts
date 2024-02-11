@@ -26,27 +26,6 @@ export default [
             label: 'Transparent Background',
             control: 'transparent',
           },
-          {
-            type: FieldsetTypes.Checkbox,
-            label: 'Display Icons',
-            control: 'displayIcons',
-          },
-          {
-            type: FieldsetTypes.Checkbox,
-            label: 'Display Header',
-            control: 'displayHeader',
-          },
-          {
-            type: FieldsetTypes.Checkbox,
-            label: 'Display Title',
-            control: 'displayTitle',
-          },
-          {
-            type: FieldsetTypes.Text,
-            label: 'Title',
-            control: 'title',
-            condition: value => value['displayTitle'],
-          },
         ],
       },
     ]
@@ -66,6 +45,12 @@ export default [
             type: FieldsetTypes.Text,
             label: 'Title',
             control: 'title',
+            condition: value => value['display'],
+          },
+          {
+            type: FieldsetTypes.Color,
+            label: 'Color',
+            control: 'color',
             condition: value => value['display'],
           },
           {

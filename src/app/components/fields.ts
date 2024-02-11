@@ -1,30 +1,31 @@
-import { AfterViewInit, Component, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, inject, Input, OnDestroy, QueryList, ViewChildren } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { NgFor, NgIf } from '@angular/common';
-import { filter, map, merge, Subscription, switchMap } from 'rxjs';
+import { filter, merge, Subscription, switchMap } from 'rxjs';
 import { Fieldset, FieldsetInput } from './fieldset';
+import { Nitro } from '../nitrogen/nitro';
 
 @Component({
   selector: 'nit-fields',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf, NgFor, Fieldset],
+  imports: [ReactiveFormsModule, Fieldset],
   template: `
-    @if (form && fields && fields.length) {
-      @for (def of fields; track def.group) {
-        <nit-fieldset [form]="group(def)" [def]="def"></nit-fieldset>
-      }
+    @if (nitro.form && nitro.definition) {
+      <form [formGroup]="nitro.form">
+        @for (def of nitro.definition; track def.group) {
+          <nit-fieldset [form]="group(def)" [def]="def"></nit-fieldset>
+        }
+      </form>
     }`
 })
 export class Fields implements AfterViewInit, OnDestroy {
-  private sub?: Subscription;
-  @ViewChildren(Fieldset) private fs!: QueryList<Fieldset>;
+  protected nitro = inject(Nitro);
+  protected sub?: Subscription;
+  @ViewChildren(Fieldset) protected fieldSets!: QueryList<Fieldset>;
 
-  @Input() form!: FormGroup;
-  @Input() fields: FieldsetInput[] | null = null;
   @Input() autoClose = true;
 
   group(def: FieldsetInput) {
-    return this.form.get(def.group) as FormGroup;
+    return (this.nitro.form as FormGroup).get(def.group) as FormGroup;
   }
 
   ngAfterViewInit() {
@@ -32,14 +33,15 @@ export class Fields implements AfterViewInit, OnDestroy {
       return;
     }
     this.sub?.unsubscribe();
-
-    const switchTo = () => merge(...this.fs.map((field: Fieldset) => field.changed.pipe(
-      map(() => field),
-      filter(field => field.expand),
-    )));
-    this.sub = this.fs.changes.pipe(switchMap(switchTo)).subscribe(field => {
-      for (const f of this.fs) {
-        if (f != field) f.expand = false;
+    this.sub = this.fieldSets.changes.pipe(
+      // let us know when the query done "querying" and contain a real list
+      filter((ql: QueryList<Fieldset>) => ql.length !== 0),
+      // take the list and create a new chain listening all `Fieldset.changed` events
+      switchMap((ql) => merge(...ql.map(f => f.changed))),
+      // then iterate all except the accepted one and close them
+    ).subscribe(field => {
+      for (const f of this.fieldSets) {
+        if (f != field) f.close();
       }
     });
   }
